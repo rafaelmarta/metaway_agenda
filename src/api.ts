@@ -12,6 +12,7 @@ axios.interceptors.request.use(
   (error) => {
     if (error.response.status === 401) {
       localStorage.removeItem("accessToken");
+      localStorage.removeItem("userId");
     }
 
     return Promise.reject(error);
@@ -24,5 +25,19 @@ export default {
       username,
       password,
     });
+  },
+
+  getContacts(userId: number) {
+    return axios.get(`${environment.HOST_API}/api/contato/listar/${userId}`);
+  },
+
+  searchContacts(termo: string) {
+    return axios.post(`${environment.HOST_API}/api/contato/pesquisar`, {
+      termo,
+    });
+  },
+
+  getFavorites() {
+    return axios.get(`${environment.HOST_API}/api/favorito/pesquisar`);
   },
 };
