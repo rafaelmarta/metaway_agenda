@@ -25,12 +25,34 @@
             aria-labelledby="avatarDropdown"
           >
             <li>
-              <router-link class="dropdown-item" to="/user"
-                >Meu cadastro</router-link
+              <router-link
+                class="dropdown-item"
+                to="/user"
+                active-class="router-link-active"
               >
+                <span class="d-flex gap-1">
+                  <img
+                    src="/icons/my-user.svg"
+                    alt="My user icon"
+                    height="24"
+                  />
+                  Meu cadastro
+                </span>
+              </router-link>
             </li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="">Desconectar</a></li>
+            <li>
+              <router-link
+                class="dropdown-item"
+                to="/login"
+                active-class="router-link-active"
+              >
+                <span class="d-flex gap-1">
+                  <img src="/icons/logout.svg" alt="Logout icon" height="24" />
+                  Sair
+                </span>
+              </router-link>
+            </li>
           </ul>
         </div>
       </div>
@@ -49,28 +71,48 @@
       >
         <div class="list-group list-group-flush">
           <router-link
-            class="list-group-item list-group-item-action bg-light"
+            class="list-group-item list-group-item-action bg-light align-items-center justify-content-center"
             to="/"
+            active-class="router-link-active"
           >
-            Home
+            <span class="d-flex gap-1">
+              <img src="/icons/home.svg" alt="Home icon" height="24" />
+              Home
+            </span>
           </router-link>
           <router-link
             class="list-group-item list-group-item-action bg-light"
             to="/users"
+            active-class="router-link-active"
           >
-            Usuários
+            <span class="d-flex gap-1">
+              <img
+                src="/icons/users.svg"
+                alt="Users icon (admin)"
+                height="24"
+              />
+              Usuários
+            </span>
           </router-link>
           <router-link
             class="list-group-item list-group-item-action bg-light"
             to="/people"
+            active-class="router-link-active"
           >
-            Pessoas
+            <span class="d-flex gap-1">
+              <img src="/icons/people.svg" alt="People icon" height="24" />
+              Pessoas
+            </span>
           </router-link>
           <router-link
             class="list-group-item list-group-item-action bg-light"
             to="/contacts"
+            active-class="router-link-active"
           >
-            Contatos
+            <span class="d-flex gap-1">
+              <img src="/icons/contacts.svg" alt="Contacts icon" height="24" />
+              Contatos
+            </span>
           </router-link>
         </div>
       </div>
@@ -128,5 +170,10 @@ export default {
 <style scoped>
 .dropdown-toggle::after {
   display: none;
+}
+.router-link-active {
+  transition: background-color 0.3s ease-in-out !important;
+  background-color: rgb(220, 221, 222) !important;
+  color: white !important;
 }
 </style>

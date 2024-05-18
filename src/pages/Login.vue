@@ -45,7 +45,7 @@ export default {
       try {
         const response = await api.login(this.username, this.password);
         localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("userId", response.data.id);
+        localStorage.setItem("loggedUser", response.data.id);
         this.$router.push("/");
       } catch (error) {
         console.log("error: ", error);

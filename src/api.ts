@@ -12,7 +12,7 @@ axios.interceptors.request.use(
   (error) => {
     if (error.response.status === 401) {
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("userId");
+      localStorage.removeItem("loggedUser");
     }
 
     return Promise.reject(error);
@@ -27,8 +27,10 @@ export default {
     });
   },
 
-  getContacts(userId: number) {
-    return axios.get(`${environment.HOST_API}/api/contato/listar/${userId}`);
+  getContacts(loggedUser: number) {
+    return axios.get(
+      `${environment.HOST_API}/api/contato/listar/${loggedUser}`
+    );
   },
 
   searchContacts(termo: string) {
@@ -39,5 +41,9 @@ export default {
 
   getFavorites() {
     return axios.get(`${environment.HOST_API}/api/favorito/pesquisar`);
+  },
+
+  getPictures(pictureId: number) {
+    return axios.post(`${environment.HOST_API}/api/foto/download/${pictureId}`);
   },
 };
