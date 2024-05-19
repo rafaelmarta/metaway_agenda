@@ -43,7 +43,20 @@ export default {
     return axios.get(`${environment.HOST_API}/api/favorito/pesquisar`);
   },
 
-  getPictures(pictureId: number) {
-    return axios.post(`${environment.HOST_API}/api/foto/download/${pictureId}`);
+  favoriteContact(contact: any) {
+    return axios.post(`${environment.HOST_API}/api/favorito/salvar`, contact);
+  },
+
+  unfavoriteContact(contactId: number) {
+    return axios.delete(
+      `${environment.HOST_API}/api/favorito/remover/${contactId}`
+    );
+  },
+
+  getPictures(contactId: number, config: any) {
+    return axios.get(
+      `${environment.HOST_API}/api/foto/download/${contactId}`,
+      config
+    );
   },
 };

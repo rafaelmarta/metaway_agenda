@@ -1,7 +1,6 @@
 <template>
   <Navigation>
-    <h1>Home</h1>
-    <div class="form-group row justify-content-center">
+    <div class="mt-5 mb-3 form-group row justify-content-center">
       <div class="col-sm-8 col-lg-6">
         <div class="input-group">
           <input type="text" class="form-control" v-model="searchTermo" />
@@ -15,7 +14,7 @@
         <tr v-for="(contact, index) in allContacts" :key="index">
           <td>
             <img
-              src="/icons/blank-user.svg"
+              :src="contact.avatar || 'icons/blank-user.svg'"
               class="rounded-circle bg-info-subtle"
               width="30"
             />
@@ -32,9 +31,10 @@
               "
               alt="Favorite icon"
               width="22"
+              @click="favoriteContact(contact)"
             />
           </td>
-          <td>
+          <!-- <td>
             <img
               src="/icons/edit.svg"
               class="rounded-circle bg-warning-subtle"
@@ -42,15 +42,15 @@
               @click="openModal(contact)"
               width="22"
             />
-          </td>
-          <td>
+          </td> -->
+          <!-- <td>
             <img
               src="/icons/eraser.svg"
               class="rounded-circle bg-danger-subtle"
               alt="Delete icon"
               width="22"
             />
-          </td>
+          </td> -->
         </tr>
       </tbody>
     </table>
@@ -139,9 +139,6 @@ export default {
       const contactsResponse = await api.getContacts(loggedUser);
       this.contacts = contactsResponse.data;
 
-      // const picturesResponse = await api.getPictures(userId);
-      // this.pictures = picturesResponse.data;
-
       const favoritesResponse = await api.getFavorites();
       this.favorites = favoritesResponse.data.map((favorite) => ({
         ...favorite,
@@ -156,20 +153,56 @@ export default {
         ),
       ].sort((a, b) => a.pessoa.nome.localeCompare(b.pessoa.nome));
 
-      // const picture = this.allContacts.map(async (contact) => {
-      //   const pictureResponse = await api.getPictures(contact.pessoa.foto.id);
-      //   return { ...contact, avatar: pictureResponse.data };
-      // });
+      const axiosConfig = {
+        responseType: "blob",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          Authorization: `Bearer ${loggedUser.token}`,
+        },
+      };
 
-      // this.allContacts = await Promise.all(picture);
-
-      console.log(this.allContacts);
+      for (let contact of this.allContacts) {
+        try {
+          const pictureResponse = await api.getPictures(
+            contact.id,
+            axiosConfig
+          );
+          if (pictureResponse.data) {
+            const blob = new Blob([pictureResponse.data], {
+              type: pictureResponse.headers["content-type"],
+            });
+            contact.avatar = URL.createObjectURL(blob);
+          }
+        } catch (error) {
+          console.log(`ERRO: ${error}`);
+          contact.avatar = "icons/blank-user.svg";
+        }
+      }
     } catch (error) {
       console.log(`ERRO: ${error}`);
     }
   },
 
   methods: {
+    async favoriteContact(contact) {
+      if (contact.favoritado) {
+        try {
+          const unfavoriteContactResponse = await api.unfavoriteContact(
+            contact.id
+          );
+          contact.favoritado = false;
+        } catch (error) {
+          console.log(`ERRO: ${error}`);
+        }
+      } else {
+        try {
+          const favoriteContactResponse = await api.favoriteContact(contact);
+          contact.favoritado = true;
+        } catch (error) {
+          console.log(`ERRO: ${error}`);
+        }
+      }
+    },
     openModal(contact) {
       this.selectedContact = { ...contact };
 
@@ -180,7 +213,7 @@ export default {
     async search() {
       try {
         const searchResponse = await api.searchContacts(this.searchTermo);
-        this.contacts = searchResponse.data;
+        this.allContacts = searchResponse.data;
       } catch (error) {
         console.log(`ERRO: ${error}`);
       }

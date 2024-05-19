@@ -15,9 +15,9 @@
             aria-expanded="false"
           >
             <img
-              src="https://github.com/rafaelmarta.png"
-              class="rounded-circle"
-              style="width: 30px; height: 30px"
+              :src="loggedUserAvatar"
+              class="rounded-circle bg-info-subtle"
+              width="30"
             />
           </button>
           <ul
@@ -130,9 +130,12 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from "vue";
+import api from "../api";
 
 export default {
   setup() {
+    let loggedUserAvatar = ref("/icons/blank-user.svg");
+
     const showSidebar = ref(true);
     const windowWidth = ref(window.innerWidth);
 
@@ -149,9 +152,40 @@ export default {
       windowWidth.value = window.innerWidth;
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       window.addEventListener("resize", updateSidebarVisibility);
       updateSidebarVisibility();
+
+      const loggedUser = localStorage.getItem("loggedUser");
+      loggedUserAvatar.value = localStorage.getItem("loggedUserAvatar");
+
+      if (!loggedUserAvatar.value) {
+        const axiosConfig = {
+          responseType: "blob",
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            Authorization: `Bearer ${loggedUser.token}`,
+          },
+        };
+
+        try {
+          const pictureResponse = await api.getPictures(
+            loggedUser,
+            axiosConfig
+          );
+
+          if (pictureResponse.data) {
+            const blob = new Blob([pictureResponse.data], {
+              type: pictureResponse.headers["content-type"],
+            });
+            loggedUserAvatar.value = URL.createObjectURL(blob);
+            localStorage.setItem("loggedUserAvatar", loggedUserAvatar.value);
+          }
+        } catch (error) {
+          console.log(`ERRO: ${error}`);
+          loggedUserAvatar.value = "/icons/blank-user.svg";
+        }
+      }
     });
 
     onUnmounted(() => {
@@ -162,6 +196,7 @@ export default {
       showSidebar,
       toggleSidebar,
       windowWidth,
+      loggedUserAvatar,
     };
   },
 };
