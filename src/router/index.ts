@@ -8,6 +8,7 @@ import ContactsVue from "../pages/Contacts.vue";
 import UserVue from "../pages/User.vue";
 
 const routes = [
+  { path: "/:catchAll(.*)", redirect: "/" },
   { path: "/", component: HomeVue },
   { path: "/login", component: LoginVue },
   { path: "/signup", component: SignupVue },
@@ -20,6 +21,31 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem("accessToken");
+  if (isAuthenticated && (to.path === "/login" || to.path === "/signup")) {
+    next("/");
+  } else if (
+    !isAuthenticated &&
+    to.path !== "/login" &&
+    to.path !== "/signup"
+  ) {
+    next("/login");
+  } else {
+    next();
+  }
+
+  if (
+    to.path !== "/login" &&
+    to.path !== "/signup" &&
+    !localStorage.getItem("accessToken")
+  ) {
+    next("/login");
+  } else {
+    next();
+  }
 });
 
 export default router;

@@ -8,15 +8,21 @@
         <form>
           <div class="form-group">
             <label>Usuario</label>
-            <input type="text" class="form-control" />
+            <input type="text" class="form-control" v-model="username" />
           </div>
           <div class="form-group">
             <label>Senha</label>
-            <input type="password" class="form-control" />
+            <input type="password" class="form-control" v-model="password" />
           </div>
 
           <div class="my-3 text-center">
-            <button type="submit" class="btn btn-primary">Entrar</button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              @click.prevent="login"
+            >
+              Entrar
+            </button>
           </div>
         </form>
       </div>
@@ -24,6 +30,28 @@
   </div>
 </template>
 <script>
-export default {};
+import api from "../api";
+
+export default {
+  data() {
+    return {
+      username: "",
+      password: "",
+    };
+  },
+
+  methods: {
+    async login() {
+      try {
+        const response = await api.login(this.username, this.password);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("loggedUser", response.data.id);
+        this.$router.push("/");
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    },
+  },
+};
 </script>
 <style lang=""></style>
