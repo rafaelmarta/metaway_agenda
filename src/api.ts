@@ -64,4 +64,14 @@ export default {
       config
     );
   },
+
+  getPeople(termo: string) {
+    return axios.post(`${environment.HOST_API}/api/pessoa/pesquisar`, {
+      nome: termo,
+    });
+  },
+
+  getPerson(personId: string) {
+    return axios.get(`${environment.HOST_API}/api/pessoa/buscar/${personId}`);
+  },
 };
