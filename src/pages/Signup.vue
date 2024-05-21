@@ -61,7 +61,12 @@
         </div>
         <div class="col-md-4 mb-3">
           <label for="dataNascimento" class="form-label">Data Nascimento</label>
-          <DatePicker v-model="formData.dataNascimento" :teleport="true" />
+          <DatePicker
+            v-model="formData.dataNascimento"
+            :enable-time-picker="false"
+            :format="format"
+            :teleport="true"
+          />
         </div>
       </div>
       <div class="row">
@@ -109,13 +114,69 @@
       </div>
     </form>
   </div>
+
+  <div
+    class="modal fade"
+    id="successModal"
+    tabindex="-1"
+    aria-labelledby="successModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">Successo</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          Conta criada com sucesso, gostaria de fazer login?
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Não
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="login"
+            data-bs-dismiss="modal"
+          >
+            Sim
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { defineComponent, reactive } from "@vue/runtime-dom";
+import { defineComponent, reactive, ref } from "@vue/runtime-dom";
 import DatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { vMaska } from "maska";
+import api from "../api";
+
+const date = ref(new Date());
+
+const format = (date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  const formattedDay = day < 10 ? "0" + day : day;
+  const formattedMonth = month < 10 ? "0" + month : month;
+
+  return `${year}-${formattedMonth}-${formattedDay}`;
+};
 
 export default defineComponent({
   name: "Signup",
@@ -125,12 +186,6 @@ export default defineComponent({
   directives: {
     maska: vMaska,
   },
-  // data: () => ({
-  //   options: {
-  //     mask: "#-#",
-  //     eager: true,
-  //   },
-  // }),
   setup() {
     const formData = reactive({
       username: "",
@@ -144,13 +199,68 @@ export default defineComponent({
       tipoUsuario: "1",
     });
 
-    function submitForm() {
-      console.log("Submit", formData);
+    async function submitForm() {
+      if (formData.password.length < 8) {
+        alert("Senha deve conter ao menos 8 caracteres");
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        alert("As senhas não coincidem.");
+        return;
+      }
+
+      try {
+        const response = await api.login("admin", "12345678");
+        localStorage.setItem("accessToken", response.data.accessToken);
+      } catch (error) {
+        console.log("error: ", error);
+      }
+
+      if (localStorage.getItem("accessToken")) {
+        let transformedData = {
+          usuario: {
+            cpf: formData.cpf,
+            nome: formData.nome,
+            dataNascimento: format(formData.dataNascimento),
+            telefone: formData.telefone,
+            email: formData.email,
+            username: formData.username,
+            password: formData.password,
+          },
+          tipos: [formData.tipoUsuario === "1" ? "ROLE_ADMIN" : "ROLE_USER"],
+        };
+        console.log("Submit", transformedData);
+
+        const responseSignup = await api.signup(transformedData);
+        console.log("response: ", responseSignup);
+
+        if (responseSignup.data.message === "Operação realizada com sucesso.") {
+          var myModal = new bootstrap.Modal(
+            document.getElementById("successModal")
+          );
+          myModal.show();
+        }
+      }
+
+      localStorage.removeItem("accessToken");
+    }
+
+    async function login() {
+      try {
+        const response = await api.login(formData.username, formData.password);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("loggedUser", response.data.id);
+        this.$router.push("/");
+      } catch (error) {
+        console.log("error: ", error);
+      }
     }
 
     return {
       formData,
       submitForm,
+      format,
+      login,
     };
   },
 });
