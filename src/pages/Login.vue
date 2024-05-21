@@ -16,9 +16,19 @@
           </div>
 
           <div class="my-3 text-center">
-            <button
+            <!-- <button
               type="submit"
               class="btn btn-primary"
+              @click.prevent="signup"
+            >
+              Criar conta
+            </button> -->
+            <router-link to="/signup">
+              <button class="btn btn-primary">Criar conta</button>
+            </router-link>
+            <button
+              type="submit"
+              class="btn btn-primary m-2"
               @click.prevent="login"
             >
               Entrar

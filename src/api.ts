@@ -1,5 +1,6 @@
 import axios from "axios";
 import { environment } from "./environments/environments";
+import { INewUser } from "./interfaces/INewUser.interface";
 
 axios.interceptors.request.use(
   (config) => {
@@ -25,6 +26,10 @@ export default {
       username,
       password,
     });
+  },
+
+  signup(newUser: INewUser) {
+    return axios.post(`${environment.HOST_API}/api/usuario/salvar`, newUser);
   },
 
   getContacts(loggedUser: number) {
