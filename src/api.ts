@@ -1,6 +1,7 @@
 import axios from "axios";
 import { environment } from "./environments/environments";
 import { INewUser } from "./interfaces/INewUser.interface";
+import { INewPerson } from "./interfaces/INewPerson.interface";
 
 axios.interceptors.request.use(
   (config) => {
@@ -65,6 +66,13 @@ export default {
     );
   },
 
+  uploadPicture(foto: any, personId: number) {
+    return axios.post(
+      `${environment.HOST_API}/api/foto/upload/${personId}`,
+      foto
+    );
+  },
+
   getPeople(termo: string) {
     return axios.post(`${environment.HOST_API}/api/pessoa/pesquisar`, {
       nome: termo,
@@ -73,5 +81,9 @@ export default {
 
   getPerson(personId: string) {
     return axios.get(`${environment.HOST_API}/api/pessoa/buscar/${personId}`);
+  },
+
+  updatePerson(person: INewPerson) {
+    return axios.post(`${environment.HOST_API}/api/pessoa/salvar`, person);
   },
 };

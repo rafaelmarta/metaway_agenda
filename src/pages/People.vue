@@ -5,6 +5,9 @@
         <div class="input-group">
           <input type="text" class="form-control" v-model="searchTermo" />
           <button class="btn btn-success" @click="search">Pesquisar</button>
+          <router-link :to="`/person/0`">
+            <button class="btn btn-info">Adicionar</button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -17,6 +20,7 @@
               :src="person.avatar || 'icons/blank-user.svg'"
               class="rounded-circle bg-info-subtle"
               width="30"
+              height="30"
             />
           </td>
           <td>{{ person.nome }}</td>
@@ -67,15 +71,6 @@
           </div>
           <div class="modal-body">
             <form @submit.stop.prevent="editperson">
-              <!-- <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="email"
-                  v-model="selectedperson.email"
-                />
-              </div> -->
               <div class="mb-2">
                 <label for="text" class="form-label">cpf</label>
                 <input
@@ -112,7 +107,6 @@ export default {
 
   data() {
     return {
-      // persons: [],
       people: [],
       searchTermo: "",
       pictures: [],
