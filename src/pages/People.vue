@@ -42,14 +42,35 @@
               class="rounded-circle bg-danger-subtle"
               alt="Delete icon"
               width="22"
+              @click="openModal(person.id)"
             />
           </td>
         </tr>
       </tbody>
     </table>
 
+    <div class="position-fixed bottom-0 end-0 p-3">
+      <div
+        class="toast align-items-center text-bg-success border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        id="successToast"
+      >
+        <div class="toast-header">
+          <strong class="me-auto">Success</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">Removido com sucesso</div>
+      </div>
+    </div>
+
     <div
-      v-if="selectedperson"
       class="modal fade"
       id="myModal"
       tabindex="-1"
@@ -60,7 +81,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">
-              {{ selectedperson.nome }}
+              Gostaria de remover?
             </h5>
             <button
               type="button"
@@ -68,19 +89,6 @@
               data-bs-dismiss="modal"
               aria-label="Close"
             ></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.stop.prevent="editperson">
-              <div class="mb-2">
-                <label for="text" class="form-label">cpf</label>
-                <input
-                  type="cpf"
-                  class="form-control"
-                  id="cpf"
-                  v-model="selectedperson.cpf"
-                />
-              </div>
-            </form>
           </div>
           <div class="modal-footer">
             <button
@@ -90,7 +98,13 @@
             >
               Fechar
             </button>
-            <button type="button" class="btn btn-primary">Salvar</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="deletePerson(person)"
+            >
+              Salvar
+            </button>
           </div>
         </div>
       </div>
@@ -111,6 +125,7 @@ export default {
       searchTermo: "",
       pictures: [],
       selectedperson: null,
+      myModal: null,
     };
   },
 
@@ -120,14 +135,6 @@ export default {
 
       const peopleResponse = await api.getPeople(this.searchTermo);
       this.people = peopleResponse.data;
-
-      // this.people = [
-      //   ...this.favorites,
-      //   ...this.persons.filter(
-      //     (person) =>
-      //       !this.favorites.find((favorite) => favorite.id === person.id)
-      //   ),
-      // ].sort((a, b) => a.pessoa.nome.localeCompare(b.pessoa.nome));
 
       const axiosConfig = {
         responseType: "blob",
@@ -159,43 +166,40 @@ export default {
   },
 
   methods: {
-    // openModal(person) {
-    //   this.selectedperson = { ...person };
+    openModal(personId) {
+      // console.log("personid modal", personId);
+      this.selectedperson = personId;
 
-    //   let myModal = new bootstrap.Modal(document.getElementById("myModal"), {});
-
-    //   myModal.show();
-    // },
+      if (document.getElementById("myModal")) {
+        this.myModal = new bootstrap.Modal(
+          document.getElementById("myModal"),
+          {}
+        );
+        this.myModal.show();
+      }
+    },
     editPerson(personId) {
       this.$router.push(`/person/${personId}`);
     },
-    // async getPictures(people) {
-    //   const axiosConfig = {
-    //     responseType: "blob",
-    //     headers: {
-    //       "Access-Control-Allow-Origin": "*",
-    //       Authorization: `Bearer ${loggedUser.token}`,
-    //     },
-    //   };
+    async deletePerson(personId) {
+      try {
+        const removeResponse = await api.deletePerson(this.selectedperson);
+        this.myModal.hide();
+        const peopleResponse = await api.getPeople(this.searchTermo);
+        this.people = peopleResponse.data;
 
-    //   for (let person of people) {
-    //     try {
-    //       const pictureResponse = await api.getPictures(
-    //         person.id,
-    //         axiosConfig
-    //       );
-    //       if (pictureResponse.data) {
-    //         const blob = new Blob([pictureResponse.data], {
-    //           type: pictureResponse.headers["content-type"],
-    //         });
-    //         person.avatar = URL.createObjectURL(blob);
-    //       }
-    //     } catch (error) {
-    //       console.log(`ERRO: ${error}`);
-    //       person.avatar = "icons/blank-user.svg";
-    //     }
-    //   }
-    // },
+        const toast = new bootstrap.Toast(
+          document.getElementById("successToast")
+        );
+        toast.show();
+
+        setTimeout(() => {
+          toast.hide();
+        }, 1000);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async search() {
       try {
         const searchResponse = await api.getPeople(this.searchTermo);

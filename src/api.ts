@@ -79,11 +79,17 @@ export default {
     });
   },
 
-  getPerson(personId: string) {
+  getPerson(personId: number) {
     return axios.get(`${environment.HOST_API}/api/pessoa/buscar/${personId}`);
   },
 
   updatePerson(person: INewPerson) {
     return axios.post(`${environment.HOST_API}/api/pessoa/salvar`, person);
+  },
+
+  deletePerson(personId: number) {
+    return axios.delete(
+      `${environment.HOST_API}/api/pessoa/remover/${personId}`
+    );
   },
 };

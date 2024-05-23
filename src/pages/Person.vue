@@ -218,8 +218,6 @@ export default defineComponent({
       formData.append("id", personId);
       formData.append("foto", file);
 
-      debugger;
-
       try {
         const responseUploadPicture = await api.uploadPicture(
           formData,
@@ -243,8 +241,6 @@ export default defineComponent({
           ([key, value]) => value !== null && value !== ""
         )
       );
-
-      debugger;
 
       // const route = useRoute();
       const personId = personIdRef.value;
