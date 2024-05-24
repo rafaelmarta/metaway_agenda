@@ -4,9 +4,11 @@
       <div class="col-sm-8 col-lg-6">
         <div class="input-group">
           <input type="text" class="form-control" v-model="searchTermo" />
-          <button class="btn btn-success" @click="search">Pesquisar</button>
+          <button class="btn btn-outline-warning" @click="search">
+            Pesquisar
+          </button>
           <router-link :to="`/person/0`">
-            <button class="btn btn-info">Adicionar</button>
+            <button class="btn btn-success ml-3">Adicionar</button>
           </router-link>
         </div>
       </div>
@@ -136,17 +138,26 @@ export default {
       const peopleResponse = await api.getPeople(this.searchTermo);
       this.people = peopleResponse.data;
 
+      await this.loadPictures(this.people, loggedUser.token);
+    } catch (error) {
+      console.error(`ERRO: ${error}`);
+    }
+  },
+
+  methods: {
+    async loadPictures(people, token) {
       const axiosConfig = {
         responseType: "blob",
         headers: {
           "Access-Control-Allow-Origin": "*",
-          Authorization: `Bearer ${loggedUser.token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
 
-      for (let person of this.people) {
+      for (let person of people) {
         try {
           const pictureResponse = await api.getPictures(person.id, axiosConfig);
+
           if (pictureResponse.data) {
             const blob = new Blob([pictureResponse.data], {
               type: pictureResponse.headers["content-type"],
@@ -154,20 +165,12 @@ export default {
             person.avatar = URL.createObjectURL(blob);
           }
         } catch (error) {
-          console.log(`ERRO: ${error}`);
+          console.error("erro: ", error);
           person.avatar = "icons/blank-user.svg";
         }
       }
-
-      await getPictures(this.people);
-    } catch (error) {
-      console.log(`ERRO: ${error}`);
-    }
-  },
-
-  methods: {
+    },
     openModal(personId) {
-      // console.log("personid modal", personId);
       this.selectedperson = personId;
 
       if (document.getElementById("myModal")) {
@@ -188,6 +191,9 @@ export default {
         const peopleResponse = await api.getPeople(this.searchTermo);
         this.people = peopleResponse.data;
 
+        const loggedUser = localStorage.getItem("loggedUser");
+        await this.loadPictures(this.people, loggedUser.token);
+
         const toast = new bootstrap.Toast(
           document.getElementById("successToast")
         );
@@ -195,17 +201,20 @@ export default {
 
         setTimeout(() => {
           toast.hide();
-        }, 1000);
+        }, 1500);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     },
     async search() {
       try {
         const searchResponse = await api.getPeople(this.searchTermo);
         this.people = searchResponse.data;
+
+        const loggedUser = localStorage.getItem("loggedUser");
+        await this.loadPictures(this.people, loggedUser.token);
       } catch (error) {
-        console.log(`ERRO: ${error}`);
+        console.error(`ERRO: ${error}`);
       }
     },
   },
@@ -217,5 +226,9 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+.ml-3 {
+  margin-left: 1rem;
 }
 </style>

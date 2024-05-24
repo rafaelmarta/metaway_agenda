@@ -22,74 +22,71 @@ axios.interceptors.request.use(
 );
 
 export default {
+  getCep(cep: string) {
+    return axios.get(`${environment.CEP_API}/${cep}/json/`);
+  },
+
   login(username: string, password: string) {
-    return axios.post(`${environment.HOST_API}/api/auth/login`, {
+    return axios.post(`${environment.HOST_API}/auth/login`, {
       username,
       password,
     });
   },
 
   signup(newUser: INewUser) {
-    return axios.post(`${environment.HOST_API}/api/usuario/salvar`, newUser);
+    return axios.post(`${environment.HOST_API}/usuario/salvar`, newUser);
   },
 
   getContacts(loggedUser: number) {
-    return axios.get(
-      `${environment.HOST_API}/api/contato/listar/${loggedUser}`
-    );
+    return axios.get(`${environment.HOST_API}/contato/listar/${loggedUser}`);
   },
 
   searchContacts(termo: string) {
-    return axios.post(`${environment.HOST_API}/api/contato/pesquisar`, {
+    return axios.post(`${environment.HOST_API}/contato/pesquisar`, {
       termo,
     });
   },
 
   getFavorites() {
-    return axios.get(`${environment.HOST_API}/api/favorito/pesquisar`);
+    return axios.get(`${environment.HOST_API}/favorito/pesquisar`);
   },
 
   favoriteContact(contact: any) {
-    return axios.post(`${environment.HOST_API}/api/favorito/salvar`, contact);
+    return axios.post(`${environment.HOST_API}/favorito/salvar`, contact);
   },
 
   unfavoriteContact(contactId: number) {
     return axios.delete(
-      `${environment.HOST_API}/api/favorito/remover/${contactId}`
+      `${environment.HOST_API}/favorito/remover/${contactId}`
     );
   },
 
   getPictures(contactId: number, config: any) {
     return axios.get(
-      `${environment.HOST_API}/api/foto/download/${contactId}`,
+      `${environment.HOST_API}/foto/download/${contactId}`,
       config
     );
   },
 
   uploadPicture(foto: any, personId: number) {
-    return axios.post(
-      `${environment.HOST_API}/api/foto/upload/${personId}`,
-      foto
-    );
+    return axios.post(`${environment.HOST_API}/foto/upload/${personId}`, foto);
   },
 
   getPeople(termo: string) {
-    return axios.post(`${environment.HOST_API}/api/pessoa/pesquisar`, {
+    return axios.post(`${environment.HOST_API}/pessoa/pesquisar`, {
       nome: termo,
     });
   },
 
   getPerson(personId: number) {
-    return axios.get(`${environment.HOST_API}/api/pessoa/buscar/${personId}`);
+    return axios.get(`${environment.HOST_API}/pessoa/buscar/${personId}`);
   },
 
   updatePerson(person: INewPerson) {
-    return axios.post(`${environment.HOST_API}/api/pessoa/salvar`, person);
+    return axios.post(`${environment.HOST_API}/pessoa/salvar`, person);
   },
 
   deletePerson(personId: number) {
-    return axios.delete(
-      `${environment.HOST_API}/api/pessoa/remover/${personId}`
-    );
+    return axios.delete(`${environment.HOST_API}/pessoa/remover/${personId}`);
   },
 };

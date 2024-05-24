@@ -15,6 +15,7 @@
             type="file"
             class="form-control d-none"
             id="avatar"
+            accept="image/*"
             @change="handleFileChange($event)"
           />
         </div>
@@ -85,6 +86,9 @@
               id="numero"
               v-model="formData.numero"
               required
+              @input="validateNumber"
+              min="0"
+              step="1"
             />
           </div>
         </div>
@@ -122,13 +126,34 @@
         </div>
         <div class="d-flex justify-content-center">
           <router-link to="/people">
-            <button class="btn btn-primary me-2">Retornar</button>
+            <button class="btn btn-danger me-2">Retornar</button>
           </router-link>
           <button type="submit" class="btn btn-primary text-center">
             Criar
           </button>
         </div>
       </form>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3">
+      <div
+        class="toast align-items-center text-bg-danger border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        id="failedToast"
+      >
+        <div class="toast-header">
+          <strong class="me-auto">ERRO: </strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">CEP não encontrado.</div>
+      </div>
     </div>
   </Navigation>
 </template>
@@ -142,6 +167,7 @@ import {
   ref,
   onMounted,
   computed,
+  watch,
 } from "@vue/runtime-dom";
 import { vMaska } from "maska";
 
@@ -151,6 +177,16 @@ export default defineComponent({
   directives: {
     maska: vMaska,
   },
+  methods: {
+    validateNumber(event) {
+      let value = event.target.value;
+      if (value < 0) {
+        this.formData.numero = 0;
+      } else if (!Number.isInteger(Number(value))) {
+        this.formData.numero = Math.floor(value);
+      }
+    },
+  },
   setup() {
     const router = useRouter();
     const person = ref({});
@@ -159,11 +195,46 @@ export default defineComponent({
     const route = useRoute();
     const personIdRef = ref(route.params.personId);
 
+    watch(
+      () => formData.value.cep,
+      async (newCep, oldCep) => {
+        if (newCep && newCep !== oldCep && newCep.length === 9) {
+          try {
+            const cepResponse = await api.getCep(newCep);
+
+            if (cepResponse.data.erro) {
+              const toast = new bootstrap.Toast(
+                document.getElementById("failedToast")
+              );
+              toast.show();
+
+              setTimeout(() => {
+                toast.hide();
+              }, 3000);
+            } else {
+              formData.value = {
+                nome: formData.value.nome,
+                cpf: formData.value.cpf,
+                cep: cepResponse.data.cep,
+                logradouro: cepResponse.data.logradouro,
+                bairro: cepResponse.data.bairro,
+                cidade: cepResponse.data.localidade,
+                estado: cepResponse.data.uf,
+                numero: formData.value.numero,
+                pais: "BR",
+              };
+            }
+          } catch (error) {
+            console.error(`ERRO: ${error}`);
+          }
+        }
+      }
+    );
+
     function handleFileChange(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      // const route = useRoute();
       const personId = personIdRef.value;
 
       changePicture(file, personId);
@@ -196,7 +267,7 @@ export default defineComponent({
           personAvatar.value = URL.createObjectURL(blob);
         }
       } catch (error) {
-        console.log(`ERRO: ${error}`);
+        console.error(`ERRO: ${error}`);
         personAvatar.value = "/icons/user-plus.svg";
       }
 
@@ -231,7 +302,7 @@ export default defineComponent({
 
         submitForm();
       } catch (error) {
-        console.log("error: ", error);
+        console.error("error: ", error);
       }
     }
 
@@ -242,7 +313,6 @@ export default defineComponent({
         )
       );
 
-      // const route = useRoute();
       const personId = personIdRef.value;
 
       const userExists = personId !== "0";
@@ -271,7 +341,10 @@ export default defineComponent({
       };
 
       const updatePersonResponse = await api.updatePerson(transformedData);
-      router.push(`/person/${updatePersonResponse.data.object.id}`);
+
+      personIdRef.value = updatePersonResponse.data.object.id;
+      router.push(`/person/${personIdRef.value}`);
+
       const loggedUser = localStorage.getItem("loggedUser");
       const axiosConfig = {
         responseType: "blob",
@@ -294,7 +367,7 @@ export default defineComponent({
           personAvatar.value = URL.createObjectURL(blob);
         }
       } catch (error) {
-        console.log(`ERRO: ${error}`);
+        console.error(`ERRO: ${error}`);
         personAvatar.value = "/icons/user-plus.svg";
       }
 
@@ -305,7 +378,6 @@ export default defineComponent({
       await setupPerson();
     });
 
-    // const route = useRoute();
     const isNewPerson = computed(() => personIdRef.value === "0");
 
     return {
@@ -319,4 +391,10 @@ export default defineComponent({
   },
 });
 </script>
-<style lang=""></style>
+<style>
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>

@@ -121,6 +121,7 @@
       <div
         style="height: calc(100vh - 56px); overflow-y: auto"
         :class="['col-10 p-0 overflow-auto ', { 'w-100': !showSidebar }]"
+        class="removeOverflow"
       >
         <slot></slot>
       </div>
@@ -182,7 +183,7 @@ export default {
             localStorage.setItem("loggedUserAvatar", loggedUserAvatar.value);
           }
         } catch (error) {
-          console.log(`ERRO: ${error}`);
+          console.error(`ERRO: ${error}`);
           loggedUserAvatar.value = "/icons/blank-user.svg";
         }
       }
@@ -210,5 +211,9 @@ export default {
   transition: background-color 0.3s ease-in-out !important;
   background-color: rgb(220, 221, 222) !important;
   color: white !important;
+}
+
+.removeOverflow {
+  overflow-x: hidden !important;
 }
 </style>
