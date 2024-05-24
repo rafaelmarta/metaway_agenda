@@ -23,9 +23,6 @@
             >
               Criar conta
             </button> -->
-            <router-link to="/signup">
-              <button class="btn btn-primary">Criar conta</button>
-            </router-link>
             <button
               type="submit"
               class="btn btn-primary m-2"
@@ -33,6 +30,11 @@
             >
               Entrar
             </button>
+          </div>
+          <div class="my-3 text-center">
+            <router-link to="/signup">
+              <a>Criar conta</a>
+            </router-link>
           </div>
         </form>
       </div>
