@@ -10,18 +10,26 @@
     </div>
 
     <table class="table table-responsive">
-      <tbody>
+      <tbody class="text-center">
+        <th></th>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Email</th>
+        <th>Telefone/Celular</th>
+        <th>Favorito</th>
         <tr v-for="(contact, index) in allContacts" :key="index">
           <td>
             <img
               :src="contact.avatar || 'icons/blank-user.svg'"
               class="rounded-circle bg-info-subtle"
-              width="30"
+              width="40"
+              height="40"
             />
           </td>
           <td>{{ contact.pessoa.nome }}</td>
           <td>{{ contact.tag }}</td>
-          <td>{{ contact.email || contact.telefone }}</td>
+          <td>{{ contact.email }}</td>
+          <td>{{ contact.telefone }}</td>
           <td>
             <img
               :src="
