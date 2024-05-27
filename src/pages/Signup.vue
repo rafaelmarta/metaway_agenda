@@ -211,7 +211,15 @@ export default defineComponent({
 
       try {
         const response = await api.login("admin", "12345678");
-        localStorage.setItem("accessToken", response.data.accessToken);
+        const availableTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+        localStorage.setItem(
+          "accessToken",
+          JSON.stringify({
+            token: response.data.accessToken,
+            availableTime: availableTime,
+          })
+        );
       } catch (error) {
         console.log("error: ", error);
       }
@@ -248,8 +256,23 @@ export default defineComponent({
     async function login() {
       try {
         const response = await api.login(formData.username, formData.password);
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("loggedUser", response.data.id);
+
+        const availableTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+        localStorage.setItem(
+          "accessToken",
+          JSON.stringify({
+            token: response.data.accessToken,
+            availableTime: availableTime,
+          })
+        );
+
+        const loggedUser = {
+          ...response.data,
+          availableTime: availableTime,
+        };
+
+        localStorage.setItem("loggedUser", JSON.stringify(loggedUser));
         this.$router.push("/");
       } catch (error) {
         console.log("error: ", error);

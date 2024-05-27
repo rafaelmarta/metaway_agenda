@@ -56,8 +56,24 @@ export default {
     async login() {
       try {
         const response = await api.login(this.username, this.password);
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("loggedUser", response.data.id);
+
+        const availableTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+        localStorage.setItem(
+          "accessToken",
+          JSON.stringify({
+            token: response.data.accessToken,
+            availableTime: availableTime,
+          })
+        );
+
+        const loggedUser = {
+          ...response.data,
+          availableTime: availableTime,
+        };
+
+        localStorage.setItem("loggedUser", JSON.stringify(loggedUser));
+
         this.$router.push("/");
       } catch (error) {
         console.log("error: ", error);

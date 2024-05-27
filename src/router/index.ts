@@ -26,7 +26,27 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem("accessToken");
+  const tokenData = localStorage.getItem("accessToken");
+  const userData = localStorage.getItem("loggedUser");
+
+  let isAuthenticated = false;
+  let isAdmin = false;
+
+  if (tokenData && userData) {
+    const { availableTime } = JSON.parse(tokenData);
+    const { tipos } = JSON.parse(userData);
+    const currentTime = new Date().getTime();
+
+    if (currentTime > availableTime) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("loggedUser");
+      localStorage.removeItem("loggedUserAvatar");
+    } else {
+      isAuthenticated = true;
+      isAdmin = tipos.includes("ROLE_ADMIN");
+    }
+  }
+
   if (isAuthenticated && (to.path === "/login" || to.path === "/signup")) {
     next("/");
   } else if (
@@ -35,19 +55,34 @@ router.beforeEach((to, from, next) => {
     to.path !== "/signup"
   ) {
     next("/login");
+  } else if (to.path === "/users" && !isAdmin) {
+    next("/");
   } else {
     next();
   }
 
-  if (
-    to.path !== "/login" &&
-    to.path !== "/signup" &&
-    !localStorage.getItem("accessToken")
-  ) {
-    next("/login");
-  } else {
-    next();
-  }
+  // const isAuthenticated = !!localStorage.getItem("accessToken");
+  // if (isAuthenticated && (to.path === "/login" || to.path === "/signup")) {
+  //   next("/");
+  // } else if (
+  //   !isAuthenticated &&
+  //   to.path !== "/login" &&
+  //   to.path !== "/signup"
+  // ) {
+  //   next("/login");
+  // } else {
+  //   next();
+  // }
+
+  // if (
+  //   to.path !== "/login" &&
+  //   to.path !== "/signup" &&
+  //   !localStorage.getItem("accessToken")
+  // ) {
+  //   next("/login");
+  // } else {
+  //   next();
+  // }
 });
 
 export default router;

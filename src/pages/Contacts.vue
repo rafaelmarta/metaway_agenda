@@ -281,9 +281,9 @@ export default {
 
   async mounted() {
     try {
-      const loggedUser = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
-      const currentUserResponse = await api.getUser(loggedUser);
+      const currentUserResponse = await api.getUser(loggedUser.id);
       this.currentUser = currentUserResponse.data.object.usuario;
 
       this.search();

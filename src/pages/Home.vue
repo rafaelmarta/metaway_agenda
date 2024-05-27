@@ -142,7 +142,7 @@ export default {
 
   async mounted() {
     try {
-      const loggedUser = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
       const contactsResponse = await api.searchContacts(this.searchTermo);
       this.contacts = contactsResponse.data;
@@ -172,7 +172,7 @@ export default {
       for (let contact of this.allContacts) {
         try {
           const pictureResponse = await api.getPictures(
-            contact.id,
+            contact.pessoa.id,
             axiosConfig
           );
           if (pictureResponse.data) {

@@ -139,7 +139,7 @@ export default {
 
   async mounted() {
     try {
-      const loggedUser = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
       const peopleResponse = await api.getPeople(this.searchTermo);
       this.people = peopleResponse.data;
@@ -197,7 +197,7 @@ export default {
         const peopleResponse = await api.getPeople(this.searchTermo);
         this.people = peopleResponse.data;
 
-        const loggedUser = localStorage.getItem("loggedUser");
+        const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
         await this.loadPictures(this.people, loggedUser.token);
 
         const toast = new bootstrap.Toast(
@@ -217,7 +217,7 @@ export default {
         const searchResponse = await api.getPeople(this.searchTermo);
         this.people = searchResponse.data;
 
-        const loggedUser = localStorage.getItem("loggedUser");
+        const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
         await this.loadPictures(this.people, loggedUser.token);
       } catch (error) {
         console.error(`ERRO: ${error}`);

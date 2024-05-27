@@ -42,16 +42,12 @@
             </li>
             <li><hr class="dropdown-divider" /></li>
             <li>
-              <router-link
-                class="dropdown-item"
-                to="/login"
-                active-class="router-link-active"
-              >
+              <a class="dropdown-item" href="#" @click="logout">
                 <span class="d-flex gap-1">
                   <img src="/icons/logout.svg" alt="Logout icon" height="24" />
                   Sair
                 </span>
-              </router-link>
+              </a>
             </li>
           </ul>
         </div>
@@ -81,6 +77,7 @@
             </span>
           </router-link>
           <router-link
+            v-if="isAdmin"
             class="list-group-item list-group-item-action bg-light"
             to="/users"
             active-class="router-link-active"
@@ -134,6 +131,27 @@ import { ref, onMounted, onUnmounted } from "vue";
 import api from "../api";
 
 export default {
+  data() {
+    return {
+      isAdmin: false,
+    };
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("loggedUser");
+      localStorage.removeItem("loggedUserAvatar");
+
+      this.$router.push("/login");
+    },
+  },
+  created() {
+    const userData = localStorage.getItem("loggedUser");
+    if (userData) {
+      const { tipos } = JSON.parse(userData);
+      this.isAdmin = tipos.includes("ROLE_ADMIN");
+    }
+  },
   setup() {
     let loggedUserAvatar = ref("/icons/blank-user.svg");
 
@@ -157,7 +175,7 @@ export default {
       window.addEventListener("resize", updateSidebarVisibility);
       updateSidebarVisibility();
 
-      const loggedUser = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
       loggedUserAvatar.value = localStorage.getItem("loggedUserAvatar");
 
       if (!loggedUserAvatar.value) {
@@ -171,7 +189,7 @@ export default {
 
         try {
           const pictureResponse = await api.getPictures(
-            loggedUser,
+            loggedUser.id,
             axiosConfig
           );
 

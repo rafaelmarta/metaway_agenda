@@ -1,0 +1,1 @@
+{"type": "major","description": "[Geral] Ajustes gerais no token/localStorage; Adicionado tempo de expiração de 24h para o token; Adicionado validação para 'usuários' apenas ROLE_ADMIN;"} 

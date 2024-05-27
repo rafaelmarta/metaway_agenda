@@ -241,7 +241,7 @@ export default defineComponent({
     }
 
     async function setupPerson() {
-      const loggedUser = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
       const personResponse = await api.getPerson(personIdRef.value);
       person.value = personResponse.data;
@@ -345,7 +345,7 @@ export default defineComponent({
       personIdRef.value = updatePersonResponse.data.object.id;
       router.push(`/person/${personIdRef.value}`);
 
-      const loggedUser = localStorage.getItem("loggedUser");
+      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
       const axiosConfig = {
         responseType: "blob",
         headers: {

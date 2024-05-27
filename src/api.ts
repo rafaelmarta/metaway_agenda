@@ -6,14 +6,23 @@ import { INewContact } from "./interfaces/INewContact.interface";
 
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const tokenData = localStorage.getItem("accessToken");
+    if (tokenData) {
+      const { token, availableTime } = JSON.parse(tokenData);
+      const currentTime = new Date().getTime();
+
+      if (currentTime > availableTime) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("loggedUser");
+        localStorage.removeItem("loggedUserAvatar");
+      } else {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
   (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("loggedUser");
     }
