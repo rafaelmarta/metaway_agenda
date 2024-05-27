@@ -8,6 +8,12 @@ export interface INewPerson {
     numero: number;
     pais: string;
   };
+  foto?: {
+    id: string;
+    name: string;
+    type: string;
+  };
   cpf: string;
   nome: string;
+  id?: number;
 }

@@ -2,6 +2,7 @@ import axios from "axios";
 import { environment } from "./environments/environments";
 import { INewUser } from "./interfaces/INewUser.interface";
 import { INewPerson } from "./interfaces/INewPerson.interface";
+import { INewContact } from "./interfaces/INewContact.interface";
 
 axios.interceptors.request.use(
   (config) => {
@@ -37,6 +38,14 @@ export default {
     return axios.post(`${environment.HOST_API}/usuario/salvar`, newUser);
   },
 
+  getUser(loggedUser: number) {
+    return axios.get(`${environment.HOST_API}/usuario/buscar/${loggedUser}`);
+  },
+
+  createContact(contact: INewContact) {
+    return axios.post(`${environment.HOST_API}/contato/salvar`, contact);
+  },
+
   getContacts(loggedUser: number) {
     return axios.get(`${environment.HOST_API}/contato/listar/${loggedUser}`);
   },
@@ -45,6 +54,10 @@ export default {
     return axios.post(`${environment.HOST_API}/contato/pesquisar`, {
       termo,
     });
+  },
+
+  deleteContact(contactId: number) {
+    return axios.delete(`${environment.HOST_API}/contato/remover/${contactId}`);
   },
 
   getFavorites() {

@@ -7,6 +7,7 @@ export interface INewUser {
     email: string;
     username: string;
     password: string;
+    id?: number;
   };
-  tipos: string[];
+  tipos?: string[];
 }

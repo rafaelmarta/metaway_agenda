@@ -15,14 +15,20 @@
     </div>
 
     <table class="table table-responsive">
-      <tbody>
+      <tbody class="text-center">
+        <th></th>
+        <th>Nome</th>
+        <th>CPF</th>
+        <th>Endereço</th>
+        <th>Editar</th>
+        <th>Remover</th>
         <tr v-for="(person, index) in people" :key="index">
           <td>
             <img
               :src="person.avatar || 'icons/blank-user.svg'"
               class="rounded-circle bg-info-subtle"
-              width="30"
-              height="30"
+              width="40"
+              height="40"
             />
           </td>
           <td>{{ person.nome }}</td>
