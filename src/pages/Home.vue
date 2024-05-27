@@ -144,7 +144,7 @@ export default {
     try {
       const loggedUser = localStorage.getItem("loggedUser");
 
-      const contactsResponse = await api.getContacts(loggedUser);
+      const contactsResponse = await api.searchContacts(this.searchTermo);
       this.contacts = contactsResponse.data;
 
       const favoritesResponse = await api.getFavorites();

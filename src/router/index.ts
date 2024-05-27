@@ -7,7 +7,6 @@ import PeopleVue from "../pages/People.vue";
 import ContactsVue from "../pages/Contacts.vue";
 import UserVue from "../pages/User.vue";
 import PersonVue from "../pages/Person.vue";
-import ContactVue from "../pages/Contact.vue";
 
 const routes = [
   { path: "/:catchAll(.*)", redirect: "/" },
@@ -18,7 +17,6 @@ const routes = [
   { path: "/people", component: PeopleVue },
   { path: "/person/:personId", component: PersonVue },
   { path: "/contacts", component: ContactsVue },
-  { path: "/contact/:contactId", component: ContactVue },
   { path: "/user", component: UserVue },
 ];
 
