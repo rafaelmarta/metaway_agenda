@@ -1,198 +1,194 @@
 <template>
-  <div>
-    <Navigation>
-      <div class="mt-5 mb-3 form-group row justify-content-center">
-        <div class="col-sm-8 col-lg-6">
-          <div class="input-group">
-            <input type="text" class="form-control" v-model="searchTermo" />
-            <button class="btn btn-outline-warning" @click="search">
-              Pesquisar
+  <Navigation>
+    <div class="mt-5 mb-3 form-group row justify-content-center">
+      <div class="col-sm-8 col-lg-6">
+        <div class="input-group">
+          <input type="text" class="form-control" v-model="searchTermo" />
+          <button class="btn btn-outline-warning" @click="search">
+            Pesquisar
+          </button>
+          <button
+            class="btn btn-success ml-3"
+            data-bs-toggle="modal"
+            data-bs-target="#addContactModal"
+            @click="openModal(0)"
+          >
+            Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-responsive">
+      <tbody class="text-center">
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Telefone/Celular</th>
+        <th>Data de nascimento</th>
+        <th>Editar</th>
+        <tr v-for="(user, index) in allUsers" :key="index">
+          <td>{{ user.id }}</td>
+          <td>{{ user.nome }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.telefone }}</td>
+          <td>{{ user.dataNascimento }}</td>
+          <td>
+            <img
+              src="/icons/edit.svg"
+              class="rounded-circle bg-warning-subtle"
+              alt="Edit icon"
+              width="22"
+              @click="openModal(user.id)"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div
+      class="modal fade"
+      id="myModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Adicionar Usuário
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  v-model="newUser.username"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Senha</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  v-model="newUser.password"
+                />
+                <span v-if="!isPasswordValid" class="text-danger">
+                  A senha deve ter pelo menos 8 caracteres, incluindo letras e
+                  números.
+                </span>
+              </div>
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label"
+                  >Confirmar Senha</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
+                  v-model="newUser.confirmPassword"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nome"
+                  v-model="newUser.nome"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="cpf" class="form-label">CPF</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cpf"
+                  v-model="newUser.cpf"
+                  v-maska
+                  data-maska="###.###.###-##"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="dataNascimento" class="form-label"
+                  >Data Nascimento</label
+                >
+                <DatePicker
+                  v-model="newUser.dataNascimento"
+                  :enable-time-picker="false"
+                  :format="format"
+                  :teleport="true"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email"
+                  v-model="newUser.email"
+                />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="telefone" class="form-label">Telefone</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="telefone"
+                  v-model="newUser.telefone"
+                  v-maska
+                  :data-maska="contactMask"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="roleSelect">Tipo de conta</label>
+                <select
+                  class="form-select"
+                  id="roleSelect"
+                  v-model="newUser.tipoUsuario"
+                >
+                  <option value="1">Administrador</option>
+                  <option value="2">Usuário</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Fechar
             </button>
             <button
-              class="btn btn-success ml-3"
-              data-bs-toggle="modal"
-              data-bs-target="#addContactModal"
-              @click="openModal(0)"
+              type="button"
+              class="btn btn-primary"
+              @click="addUser"
+              :disabled="!isFormValid"
             >
-              Adicionar
+              Salvar
             </button>
           </div>
         </div>
       </div>
-
-      <table class="table table-responsive">
-        <tbody class="text-center">
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Username</th>
-          <th>Email</th>
-          <th>Telefone/Celular</th>
-          <th>Data de nascimento</th>
-          <th>Editar</th>
-          <tr v-for="(user, index) in allUsers" :key="index">
-            <td>{{ user.id }}</td>
-            <td>{{ user.nome }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.telefone }}</td>
-            <td>{{ user.dataNascimento }}</td>
-            <td>
-              <img
-                src="/icons/edit.svg"
-                class="rounded-circle bg-warning-subtle"
-                alt="Edit icon"
-                width="22"
-                @click="openModal(user.id)"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div
-        class="modal fade"
-        id="myModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">
-                Adicionar Usuário
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="mb-3">
-                  <label for="username" class="form-label">Username</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="username"
-                    v-model="newUser.username"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="password" class="form-label">Senha</label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password"
-                    v-model="newUser.password"
-                  />
-                  <span v-if="!isPasswordValid" class="text-danger">
-                    A senha deve ter pelo menos 8 caracteres, incluindo letras e
-                    números.
-                  </span>
-                </div>
-                <div class="mb-3">
-                  <label for="confirmPassword" class="form-label"
-                    >Confirmar Senha</label
-                  >
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="confirmPassword"
-                    v-model="newUser.confirmPassword"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="nome" class="form-label">Nome</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="nome"
-                    v-model="newUser.nome"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="cpf" class="form-label">CPF</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="cpf"
-                    v-model="newUser.cpf"
-                    v-maska
-                    data-maska="###.###.###-##"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="dataNascimento" class="form-label"
-                    >Data Nascimento</label
-                  >
-                  <DatePicker
-                    v-model="newUser.dataNascimento"
-                    :enable-time-picker="false"
-                    :format="format"
-                    :teleport="true"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="email" class="form-label">E-mail</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="email"
-                    v-model="newUser.email"
-                  />
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label for="telefone" class="form-label">Telefone</label>
-                  <input
-                    type="tel"
-                    class="form-control"
-                    id="telefone"
-                    v-model="newUser.telefone"
-                    v-maska
-                    :data-maska="contactMask"
-                    required
-                  />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label" for="roleSelect"
-                    >Tipo de conta</label
-                  >
-                  <select
-                    class="form-select"
-                    id="roleSelect"
-                    v-model="newUser.tipoUsuario"
-                  >
-                    <option value="1">Administrador</option>
-                    <option value="2">Usuário</option>
-                  </select>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Fechar
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                @click="addUser"
-                :disabled="!isFormValid"
-              >
-                Salvar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Navigation>
-  </div>
+    </div>
+  </Navigation>
 </template>
 <script>
 import Navigation from "../components/Navigation.vue";
