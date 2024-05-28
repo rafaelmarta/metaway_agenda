@@ -55,6 +55,10 @@ export default {
     return axios.post(`${environment.HOST_API}/usuario/pesquisar`, { termo });
   },
 
+  updateUser(user: INewUser) {
+    return axios.put(`${environment.HOST_API}/usuario/atualizar`, user);
+  },
+
   createContact(contact: INewContact) {
     return axios.post(`${environment.HOST_API}/contato/salvar`, contact);
   },
