@@ -47,8 +47,12 @@ export default {
     return axios.post(`${environment.HOST_API}/usuario/salvar`, newUser);
   },
 
-  getUser(loggedUser: number) {
-    return axios.get(`${environment.HOST_API}/usuario/buscar/${loggedUser}`);
+  getUser(userId: number) {
+    return axios.get(`${environment.HOST_API}/usuario/buscar/${userId}`);
+  },
+
+  getUsers(termo: string) {
+    return axios.post(`${environment.HOST_API}/usuario/pesquisar`, { termo });
   },
 
   createContact(contact: INewContact) {
