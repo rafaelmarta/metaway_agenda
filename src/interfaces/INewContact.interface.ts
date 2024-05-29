@@ -1,9 +1,7 @@
 import { INewPerson } from "./INewPerson.interface";
-import { INewUser } from "./INewUser.interface";
 
 export interface INewContact {
   pessoa: INewPerson;
-  // usuario: INewUser;
   usuario: { id: number };
   email: string;
   privado: boolean;

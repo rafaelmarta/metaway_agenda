@@ -25,7 +25,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const tokenData = localStorage.getItem("accessToken");
   const userData = localStorage.getItem("loggedUser");
 
